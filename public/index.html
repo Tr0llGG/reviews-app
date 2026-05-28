@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Доска отзывов</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>💬 Доска отзывов</h1>
+
+    <div class="form-box">
+      <input type="text" id="name" placeholder="Ваше имя" />
+      <textarea id="text" placeholder="Ваш отзыв..."></textarea>
+      <button onclick="submitReview()">Отправить</button>
+    </div>
+
+    <div id="reviews-list"></div>
+  </div>
+
+  <script>
+    async function loadReviews() {
+      const res = await fetch('/reviews');
+      const reviews = await res.json();
+      const list = document.getElementById('reviews-list');
+      list.innerHTML = '';
+      reviews.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-name">${r.name}</div>
+          <div class="card-text">${r.text}</div>
+          <div class="card-date">${new Date(r.createdAt).toLocaleString('ru-RU')}</div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    async function submitReview() {
+      const name = document.getElementById('name').value.trim();
+      const text = document.getElementById('text').value.trim();
+      if (!name || !text) return alert('Заполните все поля!');
+
+      await fetch('/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, text })
+      });
+
+      document.getElementById('name').value = '';
+      document.getElementById('text').value = '';
+      loadReviews();
+    }
+
+    loadReviews();
+  </script>
+
+</body>
+</html>
