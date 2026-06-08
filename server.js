@@ -33,6 +33,10 @@ app.post('/reviews', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Сервер запущен на http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
